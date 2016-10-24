@@ -1,0 +1,529 @@
+什么是node.js
+	Node.js是一个Javascript运行环境(runtime)。
+	实际上它是对Google V8引擎进行了封装。
+	V8引 擎执行Javascript的速度非常快，性能非常好。
+	Node.js对一些特殊用例进行了优化，提供了替代的API，
+	使得V8在非浏览器环境下运行得更好。
+
+	Node.js是一个基于Chrome JavaScript运行时建立的平台，
+	 用于方便地搭建响应速度快、易于扩展的网络应用。
+	Node.js 使用事件驱动， 非阻塞I/O 模型而得以轻量和高效，
+	非常适合在分布式设备上运行数据密集型的实时应用。
+
+	操作非浏览器的：
+		os	操作系统
+		file	文件
+		net	网络
+		database 数据库
+	
+	顶层对象：	
+		javascript：window
+
+		node	  ：global(在node中没有window这个概念)
+		
+		//node中  定义的var a = 10; 不能通过global.a来访问
+		
+		1：process对象
+			process对象是一个全局对象，可以在任何地方都能访问到他，通过这个对象提供
+			的属性和放法，使我们可以对当前运行的程序的进程进行访问和控制
+		
+			argv	
+				-Array  一组包含命令行参数的数组，
+				参数：
+					第一个参数：‘node’
+					第二个参数：运行的js文件
+					第三个参数：命令行带参数运行程序
+
+			execPath
+				开启当前进程的绝对路径
+
+			env
+				返回用户环境信息
+		
+			version
+				返回node版本信息
+		
+			versions
+				返回node以及node依赖包版本信息
+
+			pid
+				当前进程的pid
+		
+			title
+				当前进程的显示名字//\WINDOWS\system32\cmd.exe - node  hello.js
+
+			arch
+				返回当前CPU处理器架构arm/ia32/x64
+		
+			platform
+				返回当前操作系统平台
+		
+			cwd
+				返回当前进程的工作目录
+
+			chdir(directory)
+				改变当前进程的工作目录
+
+			memoryUsage()
+				返回node进程的内存使用情况，单位是byte
+
+			exit(code)
+				退出
+
+			kill(pid)
+				向进程发送信息
+
+			////////////
+			最终要的标准输入输出流
+
+			输入设备：向计算机输入数据和信息的设备。是计算机与用户或其他用户或其他设备通信的桥梁。
+				  输入设备是用户和计算机系统之间进行信息交换的主要装置之一。键盘，鼠标，等都是
+				  输入设备。输入设备是从人或外部计算机进行交互的一种装置，用于把原始数据和处理
+				  这些数的程序输入到计算机中
+
+			输出设备：是计算机硬件系统的终端设备，用于接收计算机数据的输出显示，打印，等
+			
+			stdin和stdout提供了操作输入数据和输出数据的方法
+		
+			默认情况下，输入流是关闭的，要监听处理输入流数据，首先要开启输入流
+			process.stdin.openStdin();
+			process.stdin.resume();
+
+			process.stdin.on('data',function(chunk){//用于监听用户的输入数据
+				//接收一个参数chunk，输入的内容
+				console.log(“用户输入了”+chunk);
+	
+			})
+
+		2：Buffer
+			Buffer类
+			作用：用于操作二进制数据流
+
+			去字节长度用 new Buffer(); 一个汉子是2字节
+			
+		    一：对象的方法：
+			1，new Buffer(size);  size[number]创建一个Buffer对象，并为这个对象分配一个大小
+			                   当我们为一个Buffer对象分配空间大小以后，其长度是固定的，不能更改
+			
+			   例子： var bf = new Buffer(5)   console.log(bf)//16进制
+			         
+			   添加一个数组：	var bf = new Buffer([1,2,3]);
+					   console.log(bf);
+
+			   添加一个字符串：var bf = new Buffer("miaov",'utf-8');
+					   console.log(bf);  
+  
+			   检测Buffer中存的是不是这些东西
+				   for(var i = 0; i<bf.length; i++){
+					console.log(bf[i]); //2进制
+					console.log(bf[i].toString(16)); 转成16进制
+					console.log(String.fromCharCode(bf[i])); //转成字符串
+
+				}
+			2，buf.write();
+				作用：	Buffer写入
+					
+				参数：
+					第一个：字符串
+					第二个：从Buffer对象中的第几位开始写入
+					第三个：写入的字符串长度
+					第四个：写入的字符串的编码	
+				
+				例子：	var bf = new Buffer(5);
+					var str = 'miaov';
+					bf.write(str)//设置了Buffer字节字符串会被限制
+					
+		 	3，buf.toString()
+				如果用字符串拼接，内部会自动调用toString()方法
+				作用：把Buffer对象编程字符串类型
+		
+				参数：
+					第一：编码
+					第二：开始位置
+					第三：长度
+
+				例子：var bf = new Buffer('miao');//中文注意
+					console.log(bf.toString()); //miao
+
+			4，buf.toJSON();
+				作用：返回一个buf的JSON	
+
+			5，buf.slice();  //原有的也会受到影响
+				作用：截取buf
+	
+			6，buf.copy();  //原buf不会受到影响
+				作用：	copy这个对象
+				
+				参数：
+					第一：	新的buf
+					第二：	开始拷贝的位置
+					第三：	原buf拷贝开始位置
+					第四：	原buf拷贝结束的位置
+
+				例子：	var bf = new Buffer('miaov');
+					var bf2 = new Buffer(10);
+					console.log(bf.copy(bf2));
+
+		    二，类的方法(静态的方法)
+			1，Buffer.isEncoding("utf-8");
+				作用：	判断当前是否支持的编码
+			
+			2，Buffer.isBuffer();
+				作用：	判断是不是Buffer
+			3，Buffer.byteLength();
+				参数：	
+					一：字符串
+					二：编码
+				作用：	返回字符串的字节长度
+
+			4，Buffer.concat();
+				参数：
+					一：数组
+					二：[字节长度]
+
+		3，File System文件系统模块			
+			var fs = require('fs');
+
+			1,fs.open(); //异步版打开一个文件
+				参数：
+					1，path要打开的文件路径
+					2，flags打开文件的方式 读/写 r/r+
+					3，[mode] 设置文件的模式 读/写/执行 4/2/1
+					4, callback 回调
+						call参数
+							err文件打开失败的错误保存在err里面，如果成功err为null
+							fd 被打文件的标示
+					
+			2，fs.openSync()  //同步版打开一个文件
+				参数：没有回调
+				
+				直接操作返回值 var fd = fs.openSync('1.text','r');  console.log(fd);
+					
+			3，fs.read()  //异步
+				参数：
+					一：fd通过open成功打开一个文件返回的编号
+					二：buffer对象
+					三：offset偏移量，相对于Buffer的
+					四：length 添加到Buffer中的内容和长度
+					五：position 读取的文件中的起始位置
+					六：callback 参数 err  len(添加进去的内容的长度)  fd(返回新的Buffer中的内容)
+
+			4，fs.readSync()  //异步
+
+
+			5，fs.write(fd,buffer,offset,length,[position]);
+				参数：	fd：
+					
+					buffer：要写入的数据
+					offset：buffer对象中要写入的数据的起始位置
+					length：要写入的buffer数据的长度
+					position：fd中的起始位置
+					callback：回调
+
+			    另一种写法：
+				fd.write(fd,"字符串"，offset，length,[callback])
+
+			6，fs.writeSync();//同步
+
+			7，fs.close();//关闭一个打开的文件
+				参数：
+					一：fd
+					二：callback
+			8，fs.closeSync();  //同步
+
+			9，fs.writeFile();  //异步
+				作用：向一个指定的文件中写入数据，如果该文件不存在，则新建，如果存在则新的内容会覆盖原有的文件内容
+
+				参数：	
+					一：filename //文件名字
+					二：data可以是一个string也可以是原生Buffer
+					三：[options]
+					四：callback
+				例子：
+					var filename = "文件名";
+					var fs = require("fs");
+					fs.writeFile(filename,"hello",function(){
+					
+					})
+				
+			10，fs.writeFileSync()  //同步
+				参数：	和异步的差不多 ，不同：没有callback
+
+			11，fs.appendFile();  //异步
+				作用：	将数据添加到一个文件的尾部，如果文件不存在，会创建一个新的文件
+				
+				参数：	
+					一：filename //文件名字
+					二：data可以是一个string也可以是原生Buffer
+					三：[options];
+
+			12, fs.appendFileSync()  //同步
+				参数： 跟同步的差不多  
+				
+			13, fs.exists(path,callback);  //异步
+				作用：检查指定路径的文件或者目录是否存在
+				参数：
+					一：filename //文件名
+					二：callback
+						参数：err  返回true或者false
+							false： 不存在
+							true 存在
+			
+			14，fs.existsSync(path);   //同步
+				例子：	
+					var fs = require("fs");
+					var filename = "js.js";
+					if(!fs.existsSync(filename)){
+					fs.writeFileSync(filename,"miaob")
+						console.log("新文件创建成功");
+	
+					}else{
+					fs.appendFileSync(filename,"hello")
+						console.log("新内容追加成功");
+	
+					}
+		
+			15，fs.readFile()   //异步
+				作用：读取一个文件的全部内容
+				参数：
+					一：filename文件名字
+					二：[option]
+					三：callback
+						参数：	err  错误
+							data 读取的内容
+			16，fs.readFileSync()  //同步
+				作用：读取一个文件的全部内容
+				返回值
+			
+			17，fs.unlink()  //异步
+				作用：删除文件
+				参数：
+					一：删除的文件
+					二：callback
+
+			18，fs.unlinkSync()  //同步
+				
+			19，fs.rename(); //异步
+				作用：重命名
+				参数：
+					一：原有文件
+					二：新名字
+					三：callback
+			
+			20：fs.stat()
+				作用：读取文件的状态信息
+				参数;	
+					一：filename//文件名字
+					二：callback
+						参数：1，err   2，info(返回一个对象，里面有一个mode)
+				返回参数：	
+						mode:33206/文件
+						mode:16822/文件夹
+						
+		
+			21，fs.watch()
+				注意：!!!不稳定
+				作用：监听指定路径的改变
+				参数：	
+					一：filename  //文件
+					二：[option]
+					三：callback
+						参数： 	ev事件
+							fn 监听文件的名称	
+			22，fs.Ststem()
+				作用：创建文件夹
+				参数：
+					一：filename//文件夹名字
+					二：[mode]
+					三：callback
+			
+			23, fs.rmdir();
+				作用：删除文件夹
+				参数：
+					一：filename//文件夹名字
+					二：[mode]
+					三：callback
+			
+			24，fs.readdir()
+				作用：读取文件夹
+				参数：
+					一：路径
+					二：callback
+						参数：1，err, 2,文件列表
+
+			25，fs.mkdir() 创建文件夹  //异步
+
+			26，fs.mkdirSync()
+
+		4，http
+			1，用户通过浏览器发送一个http的请求到指定的主机
+			2，服务器接收到该请求，对该请求进行分析和处理
+			3，服务器处理完成以后，返回对应的数据到用户机器
+			4，浏览器接收服务器返回的数据，并根据接收到的进行分析和处理
+
+			客户端 服务端
+
+			由客户端发送一个http请求到指定的服务端->服务器接收并处理请求->返回数据到客户端
+			
+			要使用HTTP服务器或客户端功能，需引用此模块require("http");
+			
+			搭建一个服务器：
+			http.STATUS_CODES  所有的状态码
+			1，
+			   var http = require("http");  //加载一个http模块
+			   var url  = requie("url");    //加载一个url模块，node下提供的一个模块
+
+			   var server =	createServer()  //创建并返回一个web服务
+				参数：callback  //可以把request的函数放在里面
+
+			   server.on("error",function(){  //提供一个error事件(监听报错事件)
+			
+			   })
+			   server.on("listening",function(){   //监听触发的事件
+
+			   })
+			   server.on("request",function(req,res){	//客户段请求了的事件
+				//事件接收两个参数
+					(客户端)request: http下的一个实例  通过它，我们可以获取到这次请求的一些信息，比如头部信息，数据等
+					(服务端)response: http下的一个实例  通过它，我们可以向该次请求的客户端输出返回响应
+
+				console.log(req) //返回一堆数据，req.url访问路径  ?后面的部分 query string
+				var urlstr = url.parse(req.url);  //会把req.url解析成一个对象
+				swich(uslstr.pathname){
+					case "/":
+						res.writeHead(200,{
+							'content-type':'text/html;charset=utf-8'
+						})
+						res.end('<h1>首页</h1>')
+					break;
+					case "/user":
+						res.writeHead(200,{
+							'content-type':'text/html;charset=utf-8'
+						})
+						res.end('<h1>个人中心</h1>')
+					break;
+					default:
+						res.writeHead(404,{
+							'content-type':'text/html;charset=utf-8'
+						})
+						res.end('<h1>页面不存在</h1>')
+					break;
+					
+				}
+		
+				res.setHeader('miaov','lep');  //自定义头部信息
+
+				res.writeHead();  //必须在自定义头部信息和write前调用
+					参数：1，状态吗  2，状态吗对应的文字信息(没有会自动找自带的) 3，头信息{ 'content-type':'text/html;charset=utf-8' }//告诉浏览器发送过去的是什么类型(text/plain文本)
+				
+
+				res.write();  //发送一个数据块到响应正文中
+
+				res.end();   //当所有正文和头信息发送完成以后调用该方法告诉服务器数据已经全部发送完后了调用
+				
+					
+			   })
+			   server.timeout()  //默认2分钟
+						
+
+			   server.listen();  //监听端口
+				参数：	port	监听的端口
+					hostname	主机名(IP) 
+					backlog		连接等待队列的最大长度
+					callback	调用listen方法并成功开启监听以后，会触发一个listening事件，callback将作为该事件的执行函数
+			  
+
+
+
+
+
+
+
+
+	命令 ：
+		cls	清屏
+		node -v 版本
+		node 文件名 运行
+
+	模块作用域:
+		1，var a = 10;
+			在node中不能通过global.a来访问
+		
+			一个文件就是一个模块，每个模块都有自己的作用域
+			我们使用var来声明的变量，他并不是全局的，而是属于当前模块下的
+		
+			可以使用 global.a = 100;  console.log(global.a);
+
+		2，__filename:返回当前模块文件被解析过后的绝对路径(返回当前模块文件的解析后的绝对路径，该属性其实并非全局的，而是模块作用域下的)
+		   __dirname: 返回当前模块文件所在目录解析后的解析后的绝对路径，该属性也不是全局的，而是模块作用域下的
+
+		3，require("c://");  //这个方法的返回值，其实就是被加载模块中的module.exports === exports
+		   module.exports === exports	不建议给他们改写对象
+
+		4，在一个模块中通过var定义的变量，其作用域范围是当前模块，外部不能够直接的
+		   访问，如果我们想一个模块能够访问另外一个模块中定义的变量。可以：
+
+			1，把变量作为global对象的一个属性，但是这样的做法不推荐
+			2，使用模块对象 module (保存提供和当前模块有关的信息)
+				在module对象下面有一个子对象：exports对象
+				我们可以通过对象把一个模块中的局部对象进行提供访问
+
+	模块加载系统：
+		路径：
+			绝对路径：
+				require("c://");  //这个方法的返回值，其实就是被加载模块中的module.exports === exports
+			相对路径：
+				require("模块"); ./2.js   
+				注意：!!!require(2.js);  加载的是node中的核心模块或者是node_moudules
+		
+		模块查找机制：
+			1：首先按照加载的模块的文件名称进行查找
+			2：如果没找到，则会在模块文件名称后加上.js的后缀，进行查找
+			3：如果没找到，则会在文件名称后加上.json的后缀，进行查找
+			4：如果没找到，则会在文件名称之后加上.node的后缀，进行查找
+			5：在没找到抛出错误
+
+		
+			
+		
+		
+			
+			
+			
+		
+			
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
