@@ -373,7 +373,7 @@
 			   var http = require("http");  //加载一个http模块
 			   var url  = requie("url");    //加载一个url模块，node下提供的一个模块
 
-			   var server =	createServer()  //创建并返回一个web服务
+			   var server =	http.createServer()  //创建并返回一个web服务
 				参数：callback  //可以把request的函数放在里面
 
 			   server.on("error",function(){  //提供一个error事件(监听报错事件)
